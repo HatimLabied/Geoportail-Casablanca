@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    
+</head>
+<body>
+
+</body>
+
+<title>Geo-Casa</title>
+	 <!-- Import OpenLayers, reduced, wms read only version -->
+<script src="http://localhost:8081/test/libs/OpenLayers-2.13.1/OpenLayers.js" type="text/javascript"></script>
+<link rel="stylesheet" href="http://localhost:8081/test/libs/OpenLayers-2.13.1/theme/default/style.css" type="text/css">
+
+<!-- ExtJS -->
+<script type="text/javascript" src="http://localhost:8081/test/libs/ext-4.2.1/examples/shared/include-ext.js"></script>
+<script type="text/javascript" src="http://localhost:8081/test/libs/ext-4.2.1/examples/shared/options-toolbar.js"></script>
+<!-- <script type="text/javascript" src="http://localhost:8081/test/libs/ext-4.2.1/ext-dev.js"></script> -->
+<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>
+<!-- Shared -->
+<!-- Heron -->
+<!-- Heron-->
+<link rel="stylesheet" type="text/css" href="http://localhost:8081/test/libs/ext-4.2.1/examples/shared/example.css"/>
+	 
+<link rel="stylesheet" type="text/css"
+href="http://lib.heron-mc.org/heron/latest/ux/printpreview/resources/css/printpreview.css"/>
+
+
+<!-- <script type="text/javascript" src="https://unpkg.com/shp-write@latest/shpwrite.js"></script> -->
+<!-- <script type="text/javascript" src="https://github.com/eligrey/FileSaver.js"></script> -->
+<script type="text/javascript" src="./libs/shpwrite.js"></script>
+<!-- OpenLayers - System Settings -->
+<script type="text/javascript">
+
+</script>
+
+<script type="text/javascript">
+var popup;
+Ext.Loader.setConfig({
+    enabled: true,
+    disableCaching: false,
+    paths: {
+        GeoExt: "http://localhost:8081/test/libs/geoext2-2.1.0/src/GeoExt"
+    }
+});
+
+
+Ext.require([
+   
+    'GeoExt.tree.OverlayLayerContainer',
+    'GeoExt.tree.BaseLayerContainer',
+    'GeoExt.data.LayerTreeModel',
+	 'GeoExt.Action',
+     'GeoExt.panel.Map',
+     'Ext.data.TreeStore',
+     'GeoExt.tree.Panel',
+     'Ext.Viewport',
+     'Ext.layout.container.Border',
+	 'Ext.panel.Panel',
+	 'Ext.Panel',
+	 'Ext.util.Observable',
+	 'Ext.form.Action',
+     'Ext.Component',
+     'Ext.form.*',
+     'Ext.data.*',
+     'Ext.tab.*',
+	 'Ext.chart.*',
+	 'Ext.layout.container.Fit',
+	 'Ext.window.MessageBox',
+     'Ext.form.field.ComboBox',
+     'Ext.form.FieldSet',
+     'Ext.tip.QuickTipManager',
+     'Ext.window.MessageBox',
+     'Ext.tip.*'
+   
+    
+    
+
+   
+]);
+Ext.define('State', {
+    extend: 'Ext.data.Model',
+    fields: [
+        
+        {type: 'string', name: 'abbr'},
+        {type: 'string', name: 'name'},
+        {type: 'string', name: 'slogan'}
+    
+    ]
+});
+var states = [
+    {"abbr":"Zone residentielle & Utilisables","name":"buildings","slogan":"Zone residentielle & Utilisables:Les Batiments & Zone residentielle"},
+    {"abbr":"Zone residentielle & Utilisables","name":"landuse","slogan":"Zone residentielle & Utilisables:Terres utilisables"},
+    {"abbr":"Ressources naturelles","name":"natural","slogan":"Ressources naturelles:Espace vert"},
+    {"abbr":"Ressources naturelles","name":"waterways","slogan":"Ressources naturel:Les voies navigables"},
+    {"abbr":"Transport&Logistique ","name":"roads","slogan":"Transport&Logistique:Routes et ruelles"},
+    {"abbr":"Transport&Logistique ","name":"railways","slogan":"Transport&Logistique:Les chemins de fer"},
+    {"abbr":"Espaces&points publiques ","name":"Espace publique","slogan":"Espaces&points publiques:Espace publique"},
+    {"abbr":"Espaces&points publiques ","name":"points","slogan":"Espaces&points publiques:Points importantes"},
+    {"abbr":"Observation satellite","name":"Mhmd_1997","slogan":"Observation satellite:Mhmd_1997"},
+    {"abbr":"Observation satellite","name":"Mhmd_1977","slogan":"Observation satellite:Mhmd_1977"},
+];
+
+function createStore() {
+    // The data store holding the states; shared by each of the ComboBox examples below
+    return Ext.create('Ext.data.Store', {
+        autoDestroy: true,
+        model: 'State',
+        data: states
+    });
+}
+
+
+
+   Ext.onReady(function() {
+   
+    Ext.tip.QuickTipManager.init();
+    var simpleCombo = Ext.create('Ext.form.field.ComboBox', {
+        fieldLabel: 'Rechercher :',
+        labelStyle : 'color : white;font-size : 12px;font-weight : bold;border-radius : 5px;background-color : #2980b9',
+        style : "background-color : #3498db ;text-align : center",
+        icon: "http://localhost:8081/test/tools_png/sasa.png",
+        renderTo: Ext.getBody(),
+        displayField: 'slogan',
+        width: 50,
+     
+        labelWidth: 100,
+       
+        bodyPadding: 10,
+        store: createStore(),
+        queryMode: 'local',
+        typeAhead: true,
+        region : "north",
+        listeners:{
+        
+         'select': function(item)
+         {
+            //  console.log("builids layer d zeb : ",buildings)
+            //  console.log("selected ",item.value)
+            switch (item.value) {
+                    case 'Zone residentielle & Utilisables:Les Batiments & Zone residentielle':
+                    buildings.setVisibility(true);
+                    break;
+                    case 'Zone residentielle & Utilisables:Terres utilisables':
+                    landuse.setVisibility(true);
+                    break;
+                    case 'Ressources naturelles:Espace vert':
+                    natural.setVisibility(true);
+                    break;
+                    case 'Ressources naturel:Les voies navigables':
+                    waterways.setVisibility(true);
+                    break;
+                    case 'Transport&Logistique:Routes et ruelles':
+                    roads.setVisibility(true);
+                    break;
+                    case 'Transport&Logistique:Les chemins de fer':
+                    railways.setVisibility(true);
+                    break;
+                    case 'Espaces&points publiques:Points importantes':
+                    points.setVisibility(true);
+                    break;
+                    case 'Espaces&points publiques:Espace publique':
+                    places.setVisibility(true);
+                    break;
+                    case 'Observation satellite:Mhmd_1997':
+                    Mhmd_1997.setVisibility(true);
+                    break;
+                    case 'Observation satellite:Mhmd_1977':
+                    Mhmd_1977.setVisibility(true);
+                    break;
+                    
+                default:
+                    break;
+            }
+         }
+    }
+    });
+    
+
+    ///change maps
+	var changeMapStreet = function(chart){
+        Ext.MessageBox.confirm('Confirmer le changement', 'Souhaitez-vous changer la map de bas en openStreet_map?', function(choice){
+            if(choice == 'yes'){
+                //OSM_base=
+                OSM_base.setVisibility(true);
+                SAT_base.setVisibility(false);
+                WIM_base.setVisibility(false);
+                TOM_base.setVisibility(false);
+                WIMP_base.setVisibility(false);
+                
+            }
+        });
+    };
+    var changeMapImagry = function(chart){
+        Ext.MessageBox.confirm('Confirmer le changement', 'Souhaitez-vous changer la map de bas en worldImagery_map?', function(choice){
+            if(choice == 'yes'){
+                
+                WIM_base.setVisibility(true);
+                TOM_base.setVisibility(false);
+                SAT_base.setVisibility(false);
+                WIMP_base.setVisibility(false);
+                OSM_base.setVisibility(false);
+                
+            }
+        });
+    };
+    var changeMapImagryPro = function(chart){
+        Ext.MessageBox.confirm('Confirmer le changement', 'Souhaitez-vous changer la map de bas en worldImagery_map?', function(choice){
+            if(choice == 'yes'){
+                
+                WIMP_base.setVisibility(true);
+                TOM_base.setVisibility(false);
+                SAT_base.setVisibility(false);
+                WIM_base.setVisibility(false);
+                OSM_base.setVisibility(false);
+                
+            }
+        });
+    };
+    var changeMapTopo = function(chart){
+        Ext.MessageBox.confirm('Confirmer le changement', 'Souhaitez-vous changer la map de bas en Topo_map?', function(choice){
+            if(choice == 'yes'){
+                // OSM_base=TOM_base;
+                // map.addLayer(TOM_base);
+                // console.log("heho heho before : ",OSM_base)
+                // OSM_base.setIsBaseLayer( );
+                // OSM_base.setVisibility(true);
+                TOM_base.setVisibility(true);
+                WIM_base.setVisibility(false);
+                SAT_base.setVisibility(false);
+                WIMP_base.setVisibility(false);
+                OSM_base.setVisibility(false);
+                
+                // console.log("heho heho after : ",OSM_base)
+            }
+        });
+    };
+    var changeMapSat = function(chart){
+        Ext.MessageBox.confirm('Confirmer le changement', 'Souhaitez-vous changer la map de bas en satellite?', function(choice){
+            if(choice == 'yes'){
+                // OSM_base=TOM_base;
+                // map.addLayer(TOM_base);
+                // console.log("heho heho before : ",OSM_base)
+                // OSM_base.setIsBaseLayer( );
+                // OSM_base.setVisibility(true);
+                SAT_base.setVisibility(true);
+                WIM_base.setVisibility(false);
+                TOM_base.setVisibility(false);
+                WIMP_base.setVisibility(false);
+                OSM_base.setVisibility(false);
+                
+                // console.log("heho heho after : ",OSM_base)
+            }
+        });
+    };
+//////////
+
+
+
+/// search
+
+
+
+          ///code
+
+          ///
+    panel = Ext.create('Ext.panel.Panel', {
+        renderTo: Ext.getBody(),
+        title: 'Tous les droits sont réservés © 2020',
+        icon: "http://localhost:8081/test/tools_png/icon.png",
+        width: "10%",
+        region: 'south',style: 'text-align:center;margin-right:510px;margin-left:510px;border-radius : 10px'
+
+        
+    });
+
+
+
+////
+   	
+   Ext.QuickTips.init();
+
+    	var bounds = new OpenLayers.Bounds(-140.5675, -54.6198,137.0099, 74,9598);
+		 
+	var options = {
+        
+				  maxExtent: bounds,
+				  minExtent: "auto",
+				  restrictedExtent: bounds,
+                    maxResolution: 4,
+                    projection: "EPSG:4326",
+					allOverlays: false,
+                    units: 'm',
+					center: new OpenLayers.LonLat(-7.63,33.58),
+					
+					//controls:[new OpenLayers.Control.MouseDefaults()]											
+                };
+
+			
+		
+	
+
+
+
+	let map = new OpenLayers.Map('map', options);
+
+				
+	var OSM_base = new OpenLayers.Layer.WMS(
+                    "map street view", "https://ows.terrestris.de/osm/service?",
+                    {
+                        LAYERS: 'OSM-WMS',                                             //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{ isBaseLayer: true,
+					displayInLayerSwitcher: false,
+                    visibility: true}
+                );
+     var WIM_base = new OpenLayers.Layer.WMS(
+                    "World schematic",
+            'http://www2.demis.nl/worldmap/wms.asp?',
+            {layers: "Bathymetry,Topography", format: 'image/png'},
+					{ isBaseLayer: true,
+					displayInLayerSwitcher: false,
+                    visibility: false}
+                );
+    var TOM_base = new OpenLayers.Layer.WMS(
+                    "map topo view", "https://ows.terrestris.de/osm/service?",
+                    {
+                        LAYERS: 'TOPO-WMS',                                             //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{ isBaseLayer: true,
+					displayInLayerSwitcher: false,
+                    visibility: false}
+                );
+    var SAT_base = new OpenLayers.Layer.WMS(
+                    "map raster view", "https://ows.terrestris.de/osm/service?",
+                    {
+                        LAYERS: 'SRTM30-Hillshade',                                             //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{ isBaseLayer: true,
+					displayInLayerSwitcher: false,
+                    visibility: false}
+                );
+    var WIMP_base = new OpenLayers.Layer.WMS(
+                    "map world imagry view", "http://www2.demis.nl/wms/wms.ashx?WMS=BlueMarble",
+                    {
+                        LAYERS: 'Earth Image',                                             //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{ isBaseLayer: true,
+					displayInLayerSwitcher: false,
+                    visibility: false}
+                );
+
+	
+                    
+	var buildings = new OpenLayers.Layer.WMS(
+                    "Les Batiments & Zone residentielle", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:buildings',
+                        STYLES: 'point',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+				
+	var landuse = new OpenLayers.Layer.WMS(
+                    "Terres utilisables", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:landuse',
+                        STYLES: '',
+                        format: 'image/png',
+						//cql_filter: 'state_name == "BIHAR"',
+                       tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+	var natural = new OpenLayers.Layer.WMS(
+                    "Espace vert", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:natural',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					},
+					
+                );
+	var places = new OpenLayers.Layer.WMS(
+                    "Espace publique", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:places',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+	var points = new OpenLayers.Layer.WMS(
+                    "Points importantes", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:points',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+	var railways = new OpenLayers.Layer.WMS(
+                    "Les chemins de fer", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:railways',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+	var roads = new OpenLayers.Layer.WMS(
+                    "Routes et ruelles", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:roads',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+	var waterways = new OpenLayers.Layer.WMS(
+                    "voies navigables", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:waterways',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+                var Mhmd_1977 = new OpenLayers.Layer.WMS(
+                    "zSat:Mhmd_1977", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:Mhmd_1977',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					}
+                );
+                var Mhmd_1997 = new OpenLayers.Layer.WMS(
+                    "zSat:Mhmd_1997", "http://localhost:8081/geoserver/wms",
+                    {
+                        LAYERS: 'web_map:Mhmd_1997',
+                        STYLES: '',
+                        format: 'image/png',
+						tiled: true,
+						transparent: true
+                      //  tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                    },
+					{
+				//	tileOptions: {maxGetUrlLength: 2048},
+					displayInLayerSwitcher: true,
+					isBaseLayer: false,
+					//singleTile: true,
+					transitionEffect: 'resize',
+					visibility: false
+					});
+                    
+			console.log("mhmd_1997 ",Mhmd_1997)
+	
+			
+			//map.addLayers([buildings,landuse,natural,OSM_base,places,points,railways,roads,waterways,chemin]);
+			map.addLayers([OSM_base,TOM_base,WIM_base,WIMP_base,SAT_base]);
+			//pan map
+			
+			var pan = Ext.create('GeoExt.Action',{
+		         tooltip: "Pan Map",
+           // iconCls: "icon-pan",
+		   text: "controle",
+			icon:"http://localhost:8081/test/tools_png/pan.png",
+            enableToggle: true,
+            pressed: false,
+            allowDepress: true,
+            control: new OpenLayers.Control.Navigation(),
+            map: map,
+            toggleGroup: 'tools'
+                });
+				
+			var pan_map = Ext.create('Ext.Button', pan);
+			
+			// var zoomin = Ext.create('Ext.Button',{
+            //     handler: function(){
+            //         map.zoomIn();
+            //     },
+            //     tooltip: "Zoomer",
+            //     icon: "http://localhost:8081/test/tools_png/magnifier_zoom_in.png",
+			// 	text: "Zoomer",
+            //    // toggleGroup: 'tools',
+			// 	//allowDepress: false,
+			// 	//enableToggle: true,
+            // });
+
+			
+			//zoom out
+         var zoomout = Ext.create('Ext.Button',{
+                handler: function(){
+                    map.zoomOut();
+                },
+                tooltip: "Dezoomer",
+                icon: "http://localhost:8081/test/tools_png/magnifier_zoom_out.png",
+				text: "Dezoomer"
+				//text: "zoom in",
+                //toggleGroup: 'tools',
+				//allowDepress: false,
+				//enableToggle: true,
+            });
+			
+			
+				
+		// rectangle zoom		
+				var zoomrec = Ext.create('GeoExt.Action',{
+		           // height: 40,
+                  //  width: 	40,				
+                    icon:"http://localhost:8081/test/tools_png/magnifier.png",
+					text: "Select Zone",
+					control: new OpenLayers.Control.ZoomBox(),
+					map: map,
+					toggleGroup: 'tools',  // only one tool can be active in a group
+                    allowDepress: true,
+                    pressed: false,
+					enableToggle: true,
+            
+            //allowDepress: false,
+                    tooltip: "zoom Rectangle"
+                });
+			var zoom_rec = Ext.create('Ext.Button', zoomrec);
+			
+			// previous and next zoom		
+		var historyControl = new OpenLayers.Control.NavigationHistory();
+        map.addControl(historyControl);
+		
+		var navPreviousAction = Ext.create('GeoExt.Action',{
+            tooltip: "Zoom to Previous Extent",
+            icon:"http://localhost:8081/test/tools_png/arrow_left.png",
+			text:"Telecharger",
+            disabled: false,
+			enableToggle: false,
+            pressed: false,
+            allowDepress: false,
+            control: null,
+			toggleGroup: 'tools'
+        });
+       
+        // nav_prev.on("tap", function () {
+        //         alert("clicked");
+        //     });
+
+		
+		//measure length
+		 var measure_len = Ext.create('GeoExt.Action',{
+                   icon:"http://localhost:8081/test/tools_png/length.png",
+                    text: "Distance",
+                   control: new OpenLayers.Control.Measure(OpenLayers.Handler.Path, {
+                        geodesic: true,
+                        eventListeners: {
+                            measure: function(event) {
+                              if (event.order == 1) {
+                                var win = new Ext.Window({
+                                    title: "Measure Results",
+                                    modal: true,
+                                    width: 180,
+                                    constrain: true,
+                                    bodyStyle: {padding: 10},
+                                    html: event.measure.toFixed(3) + " " + event.units
+                                });
+                                win.show();}
+								else{
+                                var win = new Ext.Window({
+                                    title: "Measure Results",
+                                    modal: true,
+                                    width: 180,
+                                    constrain: true,
+                                    bodyStyle: {padding: 10},
+                                    html: event.measure.toFixed(3) + " " + event.units + "<sup>2</" + "sup>"
+                                });
+                                win.show();}
+                            }
+                        }
+                    }),
+                    map: map,
+                    // button options
+                    toggleGroup: 'tools',  // only one tool can be active in a group
+                    allowDepress: true,
+                    tooltip: "measure distance"
+                });
+		
+var m_len = Ext.create('Ext.Button', measure_len);
+		
+			// measure area	
+	var measure_area = Ext.create('GeoExt.Action',{
+	               icon:"http://localhost:8081/test/tools_png/area.png",
+                    text: "Surface",
+                   control: new OpenLayers.Control.Measure(OpenLayers.Handler.Polygon, {
+                        geodesic: true,
+                        eventListeners: {
+                            measure: function(event) {
+							if (event.order == 1) {
+                                var win = new Ext.Window({
+                                    title: "Measure Results",
+                                    modal: true,
+                                    width: 180,
+                                    constrain: true,
+                                    bodyStyle: {padding: 10},
+                                    html: event.measure.toFixed(3) + " " + event.units
+                                });
+                                win.show();}
+								else{
+                                var win = new Ext.Window({
+                                    title: "Measure Results",
+                                    modal: true,
+                                    width: 180,
+                                    constrain: true,
+                                    bodyStyle: {padding: 10},
+                                    html: event.measure.toFixed(3) + " " + event.units + "<sup>2</" + "sup>"
+                                });
+                                win.show();}
+                            }
+                        }
+                    }),
+                    map: map,
+                    // button options
+                    toggleGroup: 'tools',  // only one tool can be active in a group
+                    allowDepress: true,
+                    tooltip: "measure area"
+                });
+	var m_area = Ext.create('Ext.Button', measure_area);
+
+
+
+
+
+    /// for donwload shp 
+
+    var geoJsonDownload = Ext.create('GeoExt.Action',{
+	               icon:"http://localhost:8081/test/tools_png/tele.png",
+                    text: "ShapeFile",
+                    cls: 'buttonGreen',
+                   control: new OpenLayers.Control.Measure(OpenLayers.Handler.Polygon, {
+                        geodesic: true,
+                        eventListeners: {
+                            measure: function(event) {
+							if (event.order == 1) {
+                                var win = new Ext.Window({
+                                    title: "Measure Results",
+                                    modal: true,
+                                    width: 180,
+                                    constrain: true,
+                                    bodyStyle: {padding: 10},
+                                    html: event.measure.toFixed(3) + " " + event.units
+                                });
+                                // win.show();
+                            }
+								else{
+                                var win = new Ext.Window({
+                                    title: "Measure Results",
+                                    modal: true,
+                                    width: 180,
+                                    constrain: true,
+                                    bodyStyle: {padding: 10},
+                                    html: event.measure.toFixed(3) + " " + event.units + "<sup>2</" + "sup>"
+                                });
+                                // win.show();
+                                console.log("event : ",event);
+                                var options = {
+    folder: 'DataShapes',
+    types: {
+        point: 'mypoints',
+        polygon: 'mypolygons',
+        line: 'mylines'
+    }
+}
+                                shpwrite.download({
+    type: 'FeatureCollection',
+    features: [
+        {
+            type: 'Feature',
+            geometry: {
+                type: "Polygon",
+                coordinates: buildGeoJson(event),
+            },
+            properties: {
+                name: 'geoJsonData'
+            }
+        }
+       
+    ]
+} 
+
+, options);
+                            }
+                            }
+                        }
+                    }),
+                    map: map,
+                    // button options
+                    toggleGroup: 'tools',  // only one tool can be active in a group
+                    allowDepress: true,
+                    tooltip: "telecharger ShapeFile pour une zone (.Shp/.Prj/.Dbf/.Shx)"
+                });
+	var m_geoJsonDownload = Ext.create('Ext.Button', geoJsonDownload);
+    var buildGeoJson = function(event)
+   {
+    let geoDataArray = []  ;
+    let elemtt;
+    let arrData = event.geometry.components[0].components;
+       for (let index = 0; index < arrData.length; index++) {
+           elemtt = [arrData[index].x,arrData[index].y]    ;
+           geoDataArray.push(elemtt);   
+           
+       }
+       return [geoDataArray];
+   } 
+
+
+
+
+
+
+
+    /////
+
+var m_areai=Ext.create('Ext.Button', {
+    text      : 'Image',icon:"http://localhost:8081/test/tools_png/plus.png",
+    renderTo  : Ext.getBody(),
+    arrowAlign: 'bottom',
+    menu      : {
+        items: [
+        {text: 'Raster',icon:"http://localhost:8081/test/tools_png/raster.png",handler: function(){ 
+
+            Ext.MessageBox.confirm('Confirmer le telechargement', 'Souhaitez-vous telecharger la map extent en format Satellite?', function(choice){
+            if(choice == 'yes'){ 
+
+                if(Mhmd_1977.visibility===true){
+                var a = document.createElement("a")
+                a.download = "hellooo.png"
+                a.href = "http://localhost:8081/test/Data/1977.tif.rar";
+                a.click();
+                }
+                if(Mhmd_1997.visibility===true){
+                    setTimeout(() => {
+                        var b = document.createElement("a")
+                b.download = "hellooo.png"
+                b.href = "http://localhost:8081/test/Data/1997.tif.rar";
+                b.click();
+                    }, 2000);
+               
+                }
+                if(Mhmd_1977.visibility===false && Mhmd_1997.visibility===false){
+                    alert("sélectionnez-vous au moins une couche raster ");
+                }
+
+}
+        });
+
+        }},
+        {text: '.png',icon:"http://localhost:8081/test/tools_png/png.png",handler: function(){ 
+
+Ext.MessageBox.confirm('Confirmer le telechargement', 'Souhaitez-vous telecharger la map extent en format .png?', function(choice){
+if(choice == 'yes'){  
+var mapCanvas = document.createElement('canvas');
+var size = map.getSize();
+mapCanvas.width =map.getSize().w ;
+mapCanvas.height = map.getSize().h;
+var glContextAttributes = { preserveDrawingBuffer: true };
+
+var mapContext = mapCanvas.getContext('2d',glContextAttributes);
+Array.prototype.forEach.call(document.querySelectorAll('.openLayers-layer canvas'), function(canvas) {
+if (canvas.width > 0) {
+var opacity = canvas.parentNode.style.opacity;
+mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+var transform = canvas.style.transform;
+// Get the transform parameters from the style's transform matrix
+var matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number);
+// Apply the transform to the export map context
+CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+// mapContext.drawImage(canvas, 0, 0);
+
+async (e) => { mapContext.drawImage(canvas, 0, 0);};
+}
+});
+if (navigator.msSaveBlob) {
+// link download attribuute does not work on MS browsers
+navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.png');
+} else {
+//   var link = document.getElementById('image-download');
+var link  = document.createElement("a");
+link.href = mapCanvas.toDataURL("image/png");
+link.download = "map.png",
+link.id = "downloadImage",
+
+link.click();
+}
+}
+});
+
+}},
+        {text: '.jpg',icon:"http://localhost:8081/test/tools_png/jpg.png",handler: function(){ 
+
+            Ext.MessageBox.confirm('Confirmer le telechargement', 'Souhaitez-vous telecharger la map extent en format .jpg?', function(choice){
+            if(choice == 'yes'){  
+    var mapCanvas = document.createElement('canvas');
+    var size = map.getSize();
+    mapCanvas.width =map.getSize().w ;
+    mapCanvas.height = map.getSize().h;
+    var glContextAttributes = { preserveDrawingBuffer: true };
+  
+    var mapContext = mapCanvas.getContext('2d',glContextAttributes);
+    Array.prototype.forEach.call(document.querySelectorAll('.openLayers-layer canvas'), function(canvas) {
+      if (canvas.width > 0) {
+        var opacity = canvas.parentNode.style.opacity;
+        mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+        var transform = canvas.style.transform;
+        // Get the transform parameters from the style's transform matrix
+        var matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number);
+        // Apply the transform to the export map context
+        CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+        // mapContext.drawImage(canvas, 0, 0);
+
+        async (e) => { mapContext.drawImage(canvas, 0, 0);};
+      }
+    });
+    if (navigator.msSaveBlob) {
+      // link download attribuute does not work on MS browsers
+      navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.jpg');
+    } else {
+    //   var link = document.getElementById('image-download');
+      var link  = document.createElement("a");
+      link.href = mapCanvas.toDataURL("image/jpg");
+      
+      link.download = "map.jpg",
+      link.id = "downloadImage",
+      
+      link.click();
+    }
+}
+        });
+        }},
+        {text: '.pdf',icon:"http://localhost:8081/test/tools_png/pdf.png",handler: function(){ 
+
+            Ext.MessageBox.confirm('Confirmer le telechargement', 'Souhaitez-vous telecharger la map extent en format .pdf?', function(choice){
+            if(choice == 'yes'){  
+    var mapCanvas = document.createElement('canvas');
+    var size = map.getSize();
+    mapCanvas.width =map.getSize().w ;
+    mapCanvas.height = map.getSize().h;
+    var glContextAttributes = { preserveDrawingBuffer: true };
+  
+    var mapContext = mapCanvas.getContext('2d',glContextAttributes);
+    Array.prototype.forEach.call(document.querySelectorAll('.openLayers-layer canvas'), function(canvas) {
+      if (canvas.width > 0) {
+        var opacity = canvas.parentNode.style.opacity;
+        mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+        var transform = canvas.style.transform;
+        // Get the transform parameters from the style's transform matrix
+        var matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number);
+        // Apply the transform to the export map context
+        CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+        // mapContext.drawImage(canvas, 0, 0);
+
+        async (e) => { mapContext.drawImage(canvas, 0, 0);};
+      }
+    });
+    if (navigator.msSaveBlob) {
+      // link download attribuute does not work on MS browsers
+      navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.pdf');
+    } else {
+    //   var link = document.getElementById('image-download');
+      var link  = document.createElement("a");
+      link.href = mapCanvas.toDataURL("image/pdf");
+   
+      link.download = "map.pdf",
+      link.id = "downloadImage",
+    
+      link.click();
+    }
+}
+        });
+        }},
+    //     {text: 'shapeFile',icon:"http://localhost:8081/test/tools_png/shp.png",
+        
+    
+    // }, 
+    // new GeoExt.Action({
+    //     control: new OpenLayers.Control.Measure(OpenLayers.Handler.Polygon, {
+    //                     geodesic: true,
+    //                     eventListeners: {
+    //                         measure: function(event) {
+	// 						if (event.order == 1) {
+    //                             var win = new Ext.Window({
+    //                                 title: "Measure Results",
+    //                                 modal: true,
+    //                                 width: 180,
+    //                                 constrain: true,
+    //                                 bodyStyle: {padding: 10},
+    //                                 html: event.measure.toFixed(3) + " " + event.units
+    //                             });
+    //                             win.show();}
+	// 							else{
+    //                             var win = new Ext.Window({
+    //                                 title: "Measure Results",
+    //                                 modal: true,
+    //                                 width: 180,
+    //                                 constrain: true,
+    //                                 bodyStyle: {padding: 10},
+    //                                 html: event.measure.toFixed(3) + " " + event.units + "<sup>2</" + "sup>"
+    //                             });
+    //                             win.show();}
+    //                         }
+    //                     }
+    //                 }),
+    //                 map: map,
+    //                 // button options
+    //                 toggleGroup: 'tools',  // only one tool can be active in a group
+    //                 allowDepress: true,
+    //                 tooltip: "measure area"
+    // })
+   
+    ]
+    
+    },  
+});
+
+var m_map=Ext.create('Ext.Button', {
+    tooltip: "Changer maps",
+    text      : 'Maps',icon:"http://localhost:8081/test/tools_png/mmap.png",
+    renderTo  : Ext.getBody(),
+    arrowAlign: 'bottom',
+    menu      : [
+        {text: 'Openstreet',icon:"http://localhost:8081/test/tools_png/map1.png",handler: function(){ changeMapStreet(map);}},
+        {text: 'topo',icon:"http://localhost:8081/test/tools_png/map3.png",handler: function(){ changeMapTopo(map);}},
+        {text: 'Raster',icon:"http://localhost:8081/test/tools_png/map4.png",handler: function(){ changeMapSat(map);}},
+		{text: 'World schematic',icon:"http://localhost:8081/test/tools_png/map2.png",handler: function(){ changeMapImagry(map);}},
+        {text: 'worldImagery',icon:"http://localhost:8081/test/tools_png/map5.png",handler: function(){ changeMapImagryPro(map);}},
+     
+    ]
+});
+var more=Ext.create('Ext.Button', {
+    tooltip: "Télécharger packages",
+    text      : 'More',icon:"http://localhost:8081/test/tools_png/more.png",
+    renderTo  : Ext.getBody(),
+    arrowAlign: 'bottom',
+    menu      : [
+        {text: 'Tout les couches',icon:"http://localhost:8081/test/tools_png/layer.png",
+        
+        handler: function(){ 
+            var a = document.createElement("a")
+            a.download = "hellooo.png"
+            a.href = "http://localhost:8081/test/Data/vecteur.rar";
+            a.click();
+            }},
+        {text: 'tout les rasters',icon:"http://localhost:8081/test/tools_png/raar.png",handler: function(){ 
+
+            var a = document.createElement("a")
+            a.download = "hellooo.png"
+            a.href = "http://localhost:8081/test/Data/Raster.rar";
+            a.click();
+        }},
+        {text: 'Selection',icon:"http://localhost:8081/test/tools_png/magnifier_zoom_in.png",handler: function(){ 
+        Ext.MessageBox.prompt('Nom de la couche', 'Entrer le nom de la couche choisie:', function(choice,text){
+            if(choice =='ok'){
+            if(text==="voies navigables"){ var a = document.createElement("a")
+                     a.download = "hellooo.png"
+                     a.href = "http://localhost:8081/test/Data/waterways.rar";
+                     a.click();}
+                     //////////////////////////
+                     else if( text==="Les chemins de fer"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/railways.rar";
+                    a.click();}
+            ///////////////////
+                    else if(text==="Rourtes et ruelles"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/roads.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="Espace publique"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/places.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="Points importantes"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/points.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="Terres utilisables"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/landuse.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="zSat:Mhmd_1977"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/1977.tif.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="zSat:Mhmd_1997"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/1997.tif.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="Espaces vert"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/natural.rar";
+                    a.click();}
+                    ///////////////////
+                    else if(text==="Les Batiments & Zone residentielle"){ var a = document.createElement("a")
+                    a.download = "hellooo.png"
+                    a.href = "http://localhost:8081/test/Data/buildings.rar";
+                    a.click();}
+                    ///////////////////
+            else{ 
+                alert("Entrer le nom correct de la couche si elle existe ");}
+                    
+        }} );
+    
+}},
+     
+    ]
+});
+
+
+ var mapPanel = Ext.create('GeoExt.panel.Map', {
+           // title: 'Mappanel',
+            map: map,
+			//map.addLayers([buildings,landuse,natural,OSM_base,places,points,railways,roads,waterways,chemin]);
+			layers:[buildings,landuse,natural,places,points,railways,roads,waterways,Mhmd_1997,Mhmd_1977,],
+			
+			region: 'center',
+			stateful: true,
+           // stateId: 'mappanel',
+		   tbar: [pan_map, zoomout, zoom_rec, m_len, m_area,m_geoJsonDownload,more,m_areai,m_map],
+            dockedItems: [{
+                xtype: 'toolbar',
+                dock: 'top',
+                items: []
+            }]
+        });	
+
+		
+
+	
+	
+var store = Ext.create('Ext.data.TreeStore', {
+            fields: ['text', 'isLayover'],
+            model: 'GeoExt.data.LayerTreeModel',
+            root: {
+                expanded: true,
+                
+                        plugins: [{
+                            ptype: 'gx_layercontainer',
+                            store: mapPanel.layers,
+                        }],
+                        
+                        
+                  
+            }
+        });
+		
+		
+		
+		var stor = Ext.create('Ext.data.TreeStore', {
+        fields: ['text', 'duration', 'isLayover'],
+        root: {
+            expanded: true,
+            children: [{
+                text: 'Ressources naturelles',
+                icon:"http://localhost:8081/test/tools_png/nato.png",
+                duration: '2',
+                expanded: true,
+                children: [{
+                    text: 'voies navigables',icon:"http://localhost:8081/test/tools_png/wat.png",
+                    leaf: true,
+                    store:[buildings],
+                   
+                },  {
+                    text: 'Espaces vert',icon:"http://localhost:8081/test/tools_png/tre.png",
+            
+                    leaf: true
+                }]
+            },{text: 'Transport&Logistique ',icon:"http://localhost:8081/test/tools_png/nata.png",
+                duration: '2',
+                expanded: true,
+                children: [{
+                    text: 'Les chemins de fer',icon:"http://localhost:8081/test/tools_png/tra.png",
+                   
+                    leaf: true
+                },  {
+                    text: 'Rourtes et ruelles',icon:"http://localhost:8081/test/tools_png/roa.png",
+                   
+                    leaf: true
+                }]
+            },{text: 'Espaces&points publiques ',icon:"http://localhost:8081/test/tools_png/nataa.png",
+                duration: '2',
+                expanded: true,
+                children: [{
+                    text: 'Espace publique',icon:"http://localhost:8081/test/tools_png/loca.png",
+                   
+                    leaf: true
+                },  {
+                    text: 'Points importantes',icon:"http://localhost:8081/test/tools_png/imp.png",
+                    
+                    leaf: true
+                }]
+            },{text: 'Zone residentielle & Utilisables',
+            icon:"http://localhost:8081/test/tools_png/nataaa.png",
+                duration: '2',
+                expanded: true,
+                children: [{
+                    text: 'Terres utilisables',icon:"http://localhost:8081/test/tools_png/icoa.png",
+                   
+                    leaf: true
+                },  {
+                    text: 'Les Batiments & Zone residentielle',icon:"http://localhost:8081/test/tools_png/bata.png",
+                    
+                    leaf: true
+                }]
+            },{text: 'Observation satellite',icon:"http://localhost:8081/test/tools_png/sat.png",
+                duration: '2',
+                expanded: true,
+                children: [{
+                    text: 'zSat:Mhmd_1997',icon:"http://localhost:8081/test/tools_png/soso.png",
+                    leaf: true
+                },  {
+                    text: 'zSat:Mhmd_1977',icon:"http://localhost:8081/test/tools_png/somo.png",
+                    leaf: true
+                }]
+            }
+            
+            ]
+        },
+        
+    });
+    
+
+
+   
+
+ 
+      //  var layer;
+		  var tree = Ext.create('GeoExt.tree.Panel', {
+            border: true,
+            region: "west",
+            title: "Casablanca",
+            width: 278,
+            split: true,
+            collapsible: true,
+           // collapseMode: "mini",
+            autoScroll: true,
+            store: store,
+            rootVisible: false,
+            lines: true,
+            columns: [{
+            xtype: 'treecolumn',
+            text: 'Tout les couches',
+            dataIndex: 'text',
+            flex: 1,
+            renderer: function (val, meta, rec) {
+                if (rec.get('isLayover')) {
+                meta.style = 'color: gray; font-style: italic;';
+                }
+                 return val;
+                }
+                }],
+            
+        });
+        
+
+
+        
+///
+        	var north = Ext.create('Ext.panel.Panel', {
+			    title: "<center>CRTS: Centre Royal Teledection Spatial</center>",
+         	    region: 'north',
+		        });
+				
+				
+		
+	
+	var query_editing = Ext.create('GeoExt.tree.Panel', {
+        border: true,
+            region: "east",
+            title: "Theme_Data",
+            width: 255,
+            split: true,
+            collapsible: true,
+           // collapseMode: "mini",
+            autoScroll: true,
+            store: stor,
+            rootVisible: false,
+            lines: false,
+            columns: [{
+        xtype: 'treecolumn',
+        text: 'Nos themes',
+        dataIndex: 'text',
+        flex: 1,
+        renderer: function (val, meta, rec) {
+            if (rec.get('isLayover')) {
+                meta.style = 'color: gray; font-style: italic;';
+            }
+            return val;
+        }
+    }, {
+        text: 'Nombre de couches',
+        dataIndex: 'duration',
+        width: 30
+    }],
+    listeners:{
+        
+        'select': function(item)
+        {
+           //  console.log("builids layer d zeb : ",buildings)
+           //  console.log("selected ",item.value)
+           switch (item.lastSelected.data.text) {
+                   case 'Les Batiments & Zone residentielle':
+                   buildings.setVisibility(true);
+                   break;
+                   case 'Terres utilisables':
+                   landuse.setVisibility(true);
+                   break;
+                   case 'Espaces vert':
+                   natural.setVisibility(true);
+                   break;
+                   case 'voies navigables':
+                   waterways.setVisibility(true);
+                   break;
+                   case 'Rourtes et ruelles':
+                   roads.setVisibility(true);
+                   break;
+                   case 'Les chemins de fer':
+                   railways.setVisibility(true);
+                   break;
+                   case 'Espace publique':
+                   places.setVisibility(true);
+                   break;
+                   case 'Points importantes':
+                   points.setVisibility(true);
+                   break;
+                   case 'zSat:Mhmd_1997':
+                   Mhmd_1997.setVisibility(true);
+                   break;
+                   case 'zSat:Mhmd_1977':
+                   Mhmd_1977.setVisibility(true);
+                   break;
+                   
+               default:
+                   break;
+           }
+        }
+   }
+
+    });
+	 
+var viewport = Ext.create('Ext.Viewport', {
+            layout: "fit",
+            hideBorders: true,
+            items: {
+                layout: "border",
+                deferredRender: false,
+                items: [mapPanel, north,simpleCombo, tree,query_editing,panel, ]
+            }
+        });
+
+
+
+	
+});
+
+
+
+
+</script>
+</html>
