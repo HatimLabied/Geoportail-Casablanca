@@ -6,8 +6,9 @@ Le Géoportail-Casablanca est un portail Web public permettant l'accès à des s
 ## Table of content
 
 - [Installation](#installation)
-    - [Geoserver](#typo3-extension-repository)
-    - [postgres](#composer)
+    - [Geoserver](#Geoserver)
+    - [postgres](#postgres)
+    - [Xamp-PHP](#Xamp)
 - [Requirements](#typo3-setup)
     - [Ext.js](#extension)
     - [Geoext.js](#database)
@@ -17,6 +18,35 @@ Le Géoportail-Casablanca est un portail Web public permettant l'accès à des s
     - [connexion](#go-to-the-import-view)
     - [télécharger Data](#import-the-uploaded-page-tree-file)
 
+## Installation
+
+This document is for the old openlayrs  **2.13.1 Openaleyrs**.
+
+- Stable release: 2.13 (Opernalayers 9/10 LTS)
+- LTS release: 2.13.4 (openlayers 7/8/9 LTS)
+
+### Geoserver
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+### postgres
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+### Xamp
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ![first](https://user-images.githubusercontent.com/60801374/95662576-30384400-0b38-11eb-8941-911b7888cee3.png)
 
