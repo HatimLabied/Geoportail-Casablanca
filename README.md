@@ -30,7 +30,7 @@ o Contact the administrator: the user can contact the administrator if he wishes
     - [Ext.js](#Ext.js)
     - [Geoext.js](#Geoext.js)
     - [Openlayers](#Openlayers)
-- [Presentation of the geoportal](#Presentation of the geoportal)
+- [Presentation_of_the_geoportal](#Presentation_of_the_geoportal)
     - [First_page](#First_page)
     - [Zone_maps](#Zone_maps)
     - [Login](#Login)
@@ -94,7 +94,7 @@ OpenLayers est un logiciel libre, publié sous licence BSD. Il constitue une bib
 
  •  in this project I worked with OpenLayers-2.13.1
  
-## Presentation of the geoportal
+## Presentation_of_the_geoportal
 
 ### First_page
 
