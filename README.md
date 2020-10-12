@@ -96,16 +96,16 @@ OpenLayers est un logiciel libre, publié sous licence BSD. Il constitue une bib
  •  in this project I worked with OpenLayers-2.13.1
  
  
-##Presentation of the geoportal
+## Presentation of the geoportal
 
 
-###First_page
+### First_page
 
 
 ![0](https://user-images.githubusercontent.com/60801374/95662505-c6b83580-0b37-11eb-8b26-283306c6f7bd.png)
 
 
-###Zone_maps
+### Zone_maps
 
 ![first](https://user-images.githubusercontent.com/60801374/95662576-30384400-0b38-11eb-8941-911b7888cee3.png)
 
@@ -116,10 +116,10 @@ OpenLayers est un logiciel libre, publié sous licence BSD. Il constitue une bib
 ![second](https://user-images.githubusercontent.com/60801374/95662679-0b909c00-0b39-11eb-8630-25195965d346.png)
 ;
 
-###Login
+### Login
 
 
-#User/visitor
+# User/visitor
 
 ![0](https://user-images.githubusercontent.com/60801374/95662505-c6b83580-0b37-11eb-8b26-283306c6f7bd.png)
 
@@ -128,10 +128,9 @@ OpenLayers est un logiciel libre, publié sous licence BSD. Il constitue une bib
 
 
 
-#Admin
+# Admin
 
 AdministratorName:admin
-
 password:Test@123
 
 ![aaa](https://user-images.githubusercontent.com/60801374/95798576-aed8e100-0cf2-11eb-9122-3a3c80fa5549.png)
