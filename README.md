@@ -45,19 +45,22 @@ This document is for the old openlayrs  **2.13.1 Openaleyrs**.
 ### Geoserver
 
 GeoServer is an open source, open source computer server written in Java that allows users to share and modify geographic data. Designed for interoperability, it publishes data from all major sources of spatial d'ata using open standards.
-oin this project I worked with GeoServer 2.15.1
+
+•in this project I worked with GeoServer 2.15.1
  
 ### postgres
 
 
 PostgreSQL is a relational and object database management system (RDBMS). It is a free tool available under the terms of a BSD-type license.
 This system competes with other database management systems, whether free (like MariaDB and Firebird), or proprietary (like Oracle, MySQL, Sybase, DB2, Informix and Microsoft SQL Server). Like the free Apache and Linux projects, PostgreSQL is not controlled by a single company, but is founded on a global community of developers and companies.
-oAll versions postgres of are supported
+
+•All versions postgres of are supported
 
 ### Xamp
 
 XAMPP is a set of software for setting up a local Web server, an FTP server and an e-mail server. It is a distribution of free software (X (cross) Apache MariaDB Perl PHP) offering a good flexibility of use, known for its simple and fast installation. Thus, it is within the reach of a large number of people since it does not require special knowledge and also works on the most common operating systems.
-o All versions Xamp of are supported
+ 
+ •All versions Xamp of are supported
 
 ## Requirements
 to start the project :
@@ -66,7 +69,8 @@ firt you've to download all the libraries
 ### Ext.js
 
 Ext is a JavaScript library for building interactive web applications. It was originally an extension to Yahoo's YUI JavaScript library. Ext can now be used with the Prototype, jQuery libraries or even on its own.
-o in this project I worked with Ext-4.2.1
+
+• in this project I worked with Ext-4.2.1
 
 ### Geoext.js
 GeoExt is Open Source and enables building desktop-like GIS applications through the web. It is a JavaScript framework that combines the GIS functionality of OpenLayers with the user interface savvy of the ExtJS library provided by Sencha.
@@ -80,11 +84,14 @@ OpenLayers	ExtJS	GeoExt
 3.20.1 / 4.3.x	6.2.0	3.1.0
 4.6.5	6.2.0	3.2.0
 
-o in this project I worked with Geoext2-2.1.0
+
+•in this project I worked with Geoext2-2.1.0
+
 ### Openlayers
 OpenLayers est un logiciel libre, publié sous licence BSD. Il constitue une bibliothèque de fonctions JavaScript assurant un noyau de fonctionnalités orienté vers la mise en place d'applications clientes Web présentées fluides.
 
- o  in this project I worked with OpenLayers-2.13.1
+
+ •  in this project I worked with OpenLayers-2.13.1
 
 ![first](https://user-images.githubusercontent.com/60801374/95662576-30384400-0b38-11eb-8941-911b7888cee3.png)
 
